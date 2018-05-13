@@ -8,9 +8,9 @@ import ru.yandex.qatools.allure.annotations.Step;
  */
 public class MainStepsPage {
 
-    @Step("Выбрана афиша")
-    public void selectPoster(){
-        new MainPage().clickPoster();
+    @Step("Выбрать пункт меню")
+    public void chooseWidget(String widget){
+        new MainPage().chooseWidget(widget);
     }
 
 }

@@ -12,29 +12,38 @@ public class ScenarioSteps {
 
     PosterStepsPage posterStepsPage = new PosterStepsPage();
 
-    @When("Выбрана афиша")
-    public void selectPoster(){
-        mainStepsPage.selectPoster();
-    }
-    @When("Выбрано \"Кино\"")
-    public void selectMovies(){
-        posterStepsPage.selectMovies();
+    @When("^выбран пункт меню \"(.+)\"$")
+    public void chooseWidget(String widget){
+        mainStepsPage.chooseWidget(widget);
     }
 
-    @Then("Проверяем заголовок")
+    @When("^выбран пункт кино \"(.+)\"$")
+    public void selectMovies(String menuItem){
+        posterStepsPage.selectMovies(menuItem);
+    }
+
+    @Then("проверяем заголовок")
     public void checkTitle(){
         posterStepsPage.checkTitle();
     }
-    @When("Заходим в календарь")
+
+    @When("заходим в календарь")
     public void lickCalendar(){
         posterStepsPage.clickCalendar();
     }
-    @When("Выбираем \"завтра\"")
+
+    @When("выбираем \"завтра\"")
     public void clickTomorrow(){
         posterStepsPage.clickTomorrow();
     }
-    @Then("Выбираем фильм и проверяем название и кол-во кинотеатров")
-    public void chooseMovieAndCheck(){
-        posterStepsPage.chooseMovieAndCheck();
+
+    @When("выбираем фильм с рейтингом (.*)$")
+    public void chooseMovie(String rating){
+        posterStepsPage.chooseMovie(rating);
+    }
+
+    @Then("проверяем название и кол-во кинотеатров")
+    public void checkMovie(){
+        posterStepsPage.checkMovie();
     }
 }

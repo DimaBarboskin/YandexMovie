@@ -10,14 +10,22 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import steps.BaseSteps;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Rogoza Dimity on 12.05.2018.
  */
 public class PosterPage {
 
-    @FindBy(xpath = "//a[contains(text(), 'Кино')]")
-    WebElement movie;
+    private static String nameMovie;
+
+    private static String amountCinemas;
+
+    @FindBy(xpath = ".//ul[@role = 'menu']/li/a")
+    List<WebElement> menuPlaybillOptions;
+
+    @FindBy(xpath = "//*[@itemprop='ratingValue']")
+    List<WebElement> movies;
 
     @FindBy(xpath = "//*[@class='feed-title rubric-title content-rubric__title']")
     WebElement movieInMoscow;
@@ -37,47 +45,56 @@ public class PosterPage {
     @FindBy(xpath = "//*[@class = 'event-heading__place']")
     WebElement amountCinemasChoiceMovie;
 
-    public PosterPage(){
-        PageFactory.initElements(BaseSteps.getDriver(),this);
+    public PosterPage() {
+        PageFactory.initElements(BaseSteps.getDriver(), this);
     }
 
-    public void clickMovie(){
-        movie.click();
+    public void chooseMenuItem(String menuItem) {
+        for (WebElement item : menuPlaybillOptions) {
+            if (item.getText().equalsIgnoreCase(menuItem)) {
+                item.click();
+                return;
+            }
+        }
+        Assert.fail("Не найден элемент коллекции: " + menuItem);
     }
 
-    public void checkTitle(){
-        Assert.assertEquals("Не соответствует 'Кино в москве' ","Кино в Москве",movieInMoscow.getText());
+    public void checkTitle() {
+        Assert.assertEquals("Не соответствует 'Кино в москве' ", "Кино в Москве", movieInMoscow.getText());
     }
 
-    public void clickDate(){
+    public void clickDate() {
         closeWindow.click();
-        WebDriverWait wait = new WebDriverWait(BaseSteps.getDriver(),10);
+        WebDriverWait wait = new WebDriverWait(BaseSteps.getDriver(), 10);
         wait.until(ExpectedConditions.visibilityOf(date));
         date.click();
     }
 
-    public void clickTomorrow(){
+    public void clickTomorrow() {
         tomorrow.click();
     }
-    public void chooseMovieAndCheck(){
+
+    public void chooseMovie(String rating) {
         BaseSteps.getDriver().findElement(By.xpath("//*[@class = 'tutorial-modal__close']")).click();
         List<WebElement> movies = BaseSteps.getDriver().findElements(By.xpath("//*[@itemprop='ratingValue']"));
         WebElement choiceMovie = null;
-        for(WebElement movie : movies){
-            if(Double.parseDouble(movie.getText()) >= 8.0) {
+        for (WebElement movie : movies) {
+            if (Double.parseDouble(movie.getText()) == Double.parseDouble(rating)) {
                 choiceMovie = movie;
                 break;
             }
-            else
-                continue;
         }
-        String nameMovie = BaseSteps.getDriver().findElement(By.xpath("//*[@itemprop= 'ratingValue' and contains(text(),'"+choiceMovie.getText()+"')]/ancestor::div[starts-with(@class,'event event_id_')]/descendant::h2")).getText();
-        String amountCinemas = BaseSteps.getDriver().findElement(By.xpath("//*[@itemprop= 'ratingValue' and contains(text(),'"+choiceMovie.getText()+"')]/ancestor::div[starts-with(@class,'event event_id_')]/descendant::div[@class ='event__place']")).getText();
+        nameMovie = BaseSteps.getDriver().findElement(By.xpath("//*[@itemprop= 'ratingValue' and contains(text(),'" + choiceMovie.getText() + "')]/ancestor::div[starts-with(@class,'event event_id_')]/descendant::h2")).getText();
+        amountCinemas = BaseSteps.getDriver().findElement(By.xpath("//*[@itemprop= 'ratingValue' and contains(text(),'" + choiceMovie.getText() + "')]/ancestor::div[starts-with(@class,'event event_id_')]/descendant::div[@class ='event__place']")).getText();
         choiceMovie.click();
-        WebDriverWait wait = new WebDriverWait(BaseSteps.getDriver(),10);
+    }
+
+    public void checkMovie() {
+        WebDriverWait wait = new WebDriverWait(BaseSteps.getDriver(), 10);
         wait.until(ExpectedConditions.visibilityOf(nameChoiceMovie));
         wait.until(ExpectedConditions.visibilityOf(amountCinemasChoiceMovie));
-        Assert.assertEquals("Фильм не совпадает:",nameMovie,nameChoiceMovie.getText());
-        Assert.assertEquals("Кол-во кинотеатров не совпадает:",amountCinemas,amountCinemasChoiceMovie.getText());
+        Assert.assertEquals("Фильм не совпадает:", nameMovie, nameChoiceMovie.getText());
+        Assert.assertEquals("Кол-во кинотеатров не совпадает:", amountCinemas, amountCinemasChoiceMovie.getText());
     }
 }
+
